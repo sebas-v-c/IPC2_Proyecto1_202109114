@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from linkedList.linkedList import LinkedMatrix
-from linkedList.node import MatrixNode
 
 
 def main():
