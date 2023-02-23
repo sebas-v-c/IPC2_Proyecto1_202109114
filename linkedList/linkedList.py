@@ -1,4 +1,4 @@
-from .node import MatrixNode
+from .node import MatrixNode, Node
 
 
 class LinkedMatrix:
@@ -53,3 +53,34 @@ class LinkedMatrix:
             for column in range(self.columns):
                 print(self.get_node(row, column).data, end=" ")
             print("")
+
+
+class LinkedList:
+    def __init__(self) -> None:
+        self._head = None
+        self.__length__: int = 0
+
+    @property
+    def head(self):
+        return self._head
+
+    @head.setter
+    def head(self, head: Node):
+        self._head = head
+
+    def print_list(self):
+        current_node = self.head
+        while current_node is not None:
+            print(current_node.data)
+            current_node = current_node.next
+
+    def insert_at_begining(self, data):
+        new_node = Node(data)
+        if self.head is None:
+            self.head = new_node
+        self.head.prev = new_node
+        new_node.next = self.head
+        self.head = new_node
+
+    def __len__(self):
+        return self.__length__

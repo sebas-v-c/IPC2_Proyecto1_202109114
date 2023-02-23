@@ -47,3 +47,26 @@ class MatrixNode:
     @down.setter
     def down(self, down: "MatrixNode"):
         self._down: MatrixNode = down
+
+
+class Node:
+    def __init__(self, data=None) -> None:
+        self.data = data
+        self._next = None
+        self._prev = None
+
+    @property
+    def next(self):
+        return self._next
+
+    @next.setter
+    def next(self, next: "Node"):
+        self._next: Node = next
+
+    @property
+    def prev(self):
+        return self._prev
+
+    @prev.setter
+    def prev(self, prev: "Node"):
+        self._prev: Node = prev
