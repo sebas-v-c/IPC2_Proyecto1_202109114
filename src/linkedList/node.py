@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 class MatrixNode:
     def __init__(self, row: int, column: int) -> None:
         self.row: int = row
