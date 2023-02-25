@@ -1,3 +1,4 @@
+from typing import Optional
 from .node import MatrixNode, Node
 
 
@@ -57,16 +58,9 @@ class LinkedMatrix:
 
 class LinkedList:
     def __init__(self) -> None:
-        self._head = None
+        self.head: Optional[Node] = None
+        self.tail: Optional[Node] = None
         self.__length__: int = 0
-
-    @property
-    def head(self):
-        return self._head
-
-    @head.setter
-    def head(self, head: Node):
-        self._head = head
 
     def print_list(self):
         current_node = self.head
@@ -74,13 +68,39 @@ class LinkedList:
             print(current_node.data)
             current_node = current_node.next
 
-    def insert_at_begining(self, data):
+    def preppend(self, data):
         new_node = Node(data)
         if self.head is None:
             self.head = new_node
+            self.tail = new_node
+            return
+
         self.head.prev = new_node
         new_node.next = self.head
         self.head = new_node
+
+    def append(self, data):
+        new_node = Node(data)
+        if self.tail is None:
+            self.head = new_node
+            self.tail = new_node
+            return
+
+        self.tail.next = new_node
+        new_node.prev = self.tail
+        self.tail = new_node
+
+    def __iter__(self):
+        current_node = self.head
+        while current_node is not None:
+            yield current_node
+            current_node = current_node.next
+
+    def __reversed__(self):
+        current_node = self.tail
+        while current_node is not None:
+            yield current_node
+            current_node = current_node.prev
 
     def __len__(self):
         return self.__length__
