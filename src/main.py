@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 from linkedList.linkedList import LinkedList, LinkedMatrix
-import menu
-from menu import main_menu
+from menu import MainMenu
 
 
 def main():
@@ -16,7 +15,7 @@ def main():
     # for node in reversed(list):
     #     print(node.data)
 
-    menu.main_menu()
+    MainMenu().main_menu()
 
 
 if __name__ == "__main__":
