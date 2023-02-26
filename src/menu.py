@@ -7,12 +7,22 @@ from samples.sample import Sample
 import samples.sample_parser as smplp
 
 
-sample_list = LinkedList()
-
-
 def pause() -> None:
     input("Presione una tecla para continuar...")
     os.system("clear")
+
+
+def about() -> None:
+    os.system("clear")
+    print("------------------------------------------------")
+    print("|Introducción a la Programación y Computación 2|")
+    print("|                  Seccion: D                  |")
+    print("|               Carnet: 202109114              |")
+    print("|Nombre: Sebastian Alejandro  Vásquez Cartagena|")
+    print("|                                              |")
+    print("|                  Proyecto 1                  |")
+    print("------------------------------------------------")
+    pause()
 
 
 # Main menu relataed operations down here
@@ -21,18 +31,6 @@ def pause() -> None:
 class MainMenu:
     def __init__(self, sample_list: LinkedList = LinkedList()) -> None:
         self.sample_list = sample_list
-
-    def about(self) -> None:
-        os.system("clear")
-        print("------------------------------------------------")
-        print("|Introducción a la Programación y Computación 2|")
-        print("|                  Seccion: D                  |")
-        print("|               Carnet: 202109114              |")
-        print("|Nombre: Sebastian Alejandro  Vásquez Cartagena|")
-        print("|                                              |")
-        print("|                  Proyecto 1                  |")
-        print("------------------------------------------------")
-        pause()
 
     def main_menu(self, error: bool = False) -> None:
         if error:
@@ -102,7 +100,7 @@ class MainMenu:
             self.main_menu()
 
         elif option == "4":
-            self.about()
+            about()
             self.main_menu()
         elif option == "5":
             print("Hasta la proxima!")
