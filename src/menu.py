@@ -83,7 +83,9 @@ class MainMenu:
             os.system("clear")
             sample_menu = SampleMenu(self.sample_list)
             sample_menu.sample_operations()
-            sample_list = sample_menu.sample_list
+            self.sample_list = sample_menu.sample_list
+            self.main_menu()
+            return
         elif option == "3":
             if len(self.sample_list) == 0:
                 print("AUN NO SE HAN CARGADO MUESTRAS")
@@ -93,12 +95,12 @@ class MainMenu:
             file = asksaveasfile(
                 filetypes=[("XML File", "*.xml")], defaultextension=".xml"
             )
+            print(type(file))
             if file:
-                smplp.save_samples_to_file(self.sample_list, file)
+                smplp.save_samples_to_file(self.sample_list, file.name)
                 print("ARCHIVO GUARDADO CON ÉXITO")
                 pause()
             self.main_menu()
-
         elif option == "4":
             about()
             self.main_menu()
@@ -151,7 +153,7 @@ class SampleMenu:
         selected_option: str = "0"
 
         if self.selected_sample is not None:
-            print("Muestra seleccionada: ", f'"{self.selected_sample.sample_name}"')
+            print("Muestra seleccionada: ", f'"{self.selected_sample.sample_code}"')
         else:
             print("NO SE HA SELECCIONADO UNA MUESTRA")
 
@@ -164,12 +166,12 @@ class SampleMenu:
     def execute_sample_options(self, selected_option: str) -> None:
         if selected_option == "1":
             i = 0
-            for sample in sample_list:
+            for sample in self.sample_list:
                 i += 1
-                print("\t", str(i) + ". ", sample.sample_name)
+                print("\t", str(i) + ". ", sample.sample_code)
             option = int(input("Selecciona una muestra: ")) - 1
             try:
-                self.selected_sample = sample_list[option].data
+                self.selected_sample = self.sample_list[option].data
             except:
                 print("OPCIÓN INVÁLIDA")
                 pause()
@@ -201,6 +203,3 @@ class SampleMenu:
 
         # if everything of the above fails
         self.sample_operations(error=True)
-
-
-# Extra functions

@@ -60,7 +60,7 @@ class LinkedList:
     def __init__(self) -> None:
         self.head: Optional[Node] = None
         self.tail: Optional[Node] = None
-        self.__length__: int = 0
+        self.__length: int = 0
 
     def print_list(self):
         current_node = self.head
@@ -69,6 +69,7 @@ class LinkedList:
             current_node = current_node.next
 
     def preppend(self, data):
+        self.__length += 1
         new_node = Node(data)
         if self.head is None:
             self.head = new_node
@@ -78,9 +79,9 @@ class LinkedList:
         self.head.prev = new_node
         new_node.next = self.head
         self.head = new_node
-        self.__length__ += 1
 
     def append(self, data):
+        self.__length += 1
         new_node = Node(data)
         if self.tail is None:
             self.head = new_node
@@ -90,10 +91,10 @@ class LinkedList:
         self.tail.next = new_node
         new_node.prev = self.tail
         self.tail = new_node
-        self.__length__ += 1
 
     def __getitem__(self, index: int):
-        if index > self.__length__ or index < 0:
+        print(self.__length)
+        if index > self.__length or index < 0:
             raise IndexError
         current_node = self.head
         for i in range(index):
@@ -113,4 +114,5 @@ class LinkedList:
             current_node = current_node.prev
 
     def __len__(self):
-        return self.__length__
+        print(self.__length)
+        return self.__length

@@ -5,7 +5,7 @@ class MatrixNode:
     def __init__(self, row: int, column: int) -> None:
         self.row: int = row
         self.column: int = column
-        self._data = 0
+        self._data = None
         self._left = None
         self._right = None
         self._up = None
