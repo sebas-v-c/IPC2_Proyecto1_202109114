@@ -78,6 +78,7 @@ class LinkedList:
         self.head.prev = new_node
         new_node.next = self.head
         self.head = new_node
+        self.__length__ += 1
 
     def append(self, data):
         new_node = Node(data)
@@ -89,17 +90,26 @@ class LinkedList:
         self.tail.next = new_node
         new_node.prev = self.tail
         self.tail = new_node
+        self.__length__ += 1
+
+    def __getitem__(self, index: int):
+        if index > self.__length__ or index < 0:
+            raise IndexError
+        current_node = self.head
+        for i in range(index):
+            current_node = current_node.next
+        return current_node
 
     def __iter__(self):
         current_node = self.head
         while current_node is not None:
-            yield current_node
+            yield current_node.data
             current_node = current_node.next
 
     def __reversed__(self):
         current_node = self.tail
         while current_node is not None:
-            yield current_node
+            yield current_node.data
             current_node = current_node.prev
 
     def __len__(self):
