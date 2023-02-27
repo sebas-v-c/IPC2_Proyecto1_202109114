@@ -1,6 +1,7 @@
 from typing import Optional
 
 from linkedList.linkedList import LinkedList, LinkedMatrix
+from linkedList.node import MatrixNode
 from samples.organism import Organism
 
 
@@ -12,7 +13,16 @@ class Sample:
         self.sample_description: str = sample_desciption
         self.organisms: LinkedList = LinkedList()
 
-        self.__test_grid__: LinkedMatrix = LinkedMatrix(rows, columns)
+        self.test_grid: LinkedMatrix = LinkedMatrix(rows, columns)
 
     def place_living_cell(self, organism: str, row: int, column: int) -> None:
-        self.__test_grid__.get_node(row, column).data = organism
+        self.test_grid.get_node(row, column).data = organism
+
+    def get_grid_dimentions(self) -> tuple[int, int]:
+        return (self.test_grid.rows, self.test_grid.columns)
+
+    def get_cell(self, target_row: int, target_column: int) -> MatrixNode:
+        return self.test_grid.get_node(target_row, target_column)
+
+    def get_head_node(self) -> MatrixNode:
+        return self.test_grid.head

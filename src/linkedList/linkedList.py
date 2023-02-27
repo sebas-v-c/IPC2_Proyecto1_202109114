@@ -68,7 +68,7 @@ class LinkedList:
             print(current_node.data)
             current_node = current_node.next
 
-    def preppend(self, data):
+    def preppend(self, data) -> None:
         self.__length += 1
         new_node = Node(data)
         if self.head is None:
@@ -80,7 +80,7 @@ class LinkedList:
         new_node.next = self.head
         self.head = new_node
 
-    def append(self, data):
+    def append(self, data) -> None:
         self.__length += 1
         new_node = Node(data)
         if self.tail is None:
@@ -92,8 +92,33 @@ class LinkedList:
         new_node.prev = self.tail
         self.tail = new_node
 
+    def remove_node(self, node: Node) -> None:
+        if self.__length == 0:
+            raise IndexError
+
+        if node is self.head:
+            self.__length -= 1
+            self.head = self.head.next
+            self.head.prev = None
+            return
+        elif node is self.tail:
+            self.__length -= 1
+            self.tail = self.tail.prev
+            self.tail.next = None
+            return
+
+        current_node = self.head.next
+        while current_node is not None:
+            if current_node is node:
+                current_node.next.prev = current_node.prev
+                current_node.prev.next = current_node.next
+                self.__length -= 1
+                return
+            current_node = current_node.next
+
+        raise KeyError
+
     def __getitem__(self, index: int):
-        print(self.__length)
         if index > self.__length or index < 0:
             raise IndexError
         current_node = self.head
@@ -114,5 +139,4 @@ class LinkedList:
             current_node = current_node.prev
 
     def __len__(self):
-        print(self.__length)
         return self.__length

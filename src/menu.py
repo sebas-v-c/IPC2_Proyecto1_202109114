@@ -93,11 +93,12 @@ class MainMenu:
                 self.main_menu()
                 return
             file = asksaveasfile(
-                filetypes=[("XML File", "*.xml")], defaultextension=".xml"
+                mode="w", filetypes=[("XML File", "*.xml")], defaultextension=".xml"
             )
-            print(type(file))
             if file:
-                smplp.save_samples_to_file(self.sample_list, file.name)
+                xml_string = smplp.generate_xml_string(self.sample_list)
+                file.write(xml_string)
+                file.close()
                 print("ARCHIVO GUARDADO CON ÉXITO")
                 pause()
             self.main_menu()

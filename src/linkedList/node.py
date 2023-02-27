@@ -63,13 +63,13 @@ class Node:
         return self._next
 
     @next.setter
-    def next(self, next: "Node"):
-        self._next: Node = next
+    def next(self, next: Optional["Node"]):
+        self._next: Optional[Node] = next
 
     @property
     def prev(self):
         return self._prev
 
     @prev.setter
-    def prev(self, prev: "Node"):
-        self._prev: Node = prev
+    def prev(self, prev: Optional["Node"]):
+        self._prev: Optional[Node] = prev
