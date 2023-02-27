@@ -3,8 +3,10 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 from typing import Optional
 
 from linkedList.linkedList import LinkedList
+from samples.organism import Organism
 from samples.sample import Sample
 import samples.sample_parser as smplp
+import copy
 
 
 def pause() -> None:
@@ -118,6 +120,9 @@ class SampleMenu:
     def __init__(self, sample_list: LinkedList) -> None:
         self.sample_list = sample_list
         self.selected_sample: Optional[Sample] = None
+        self.sample_can_survive = False
+        self.selected_organisms = LinkedList()
+        self.modified_sample: Optional[Sample] = None
 
     def sample_operations(self, error: bool = False) -> None:
         if error:
@@ -125,12 +130,12 @@ class SampleMenu:
             pause()
 
         OPTIONS = [
-            "Seleccionar una muestra",  # Select a sample from the sample linked list
-            "Identificar celdas para vida prosperable",  # Identify the cells where an organism could survive
-            "Colocar organismo en una celda",  # put an organism in a cell
-            "Actualizar información de la muestra",  # Update this specific sample
-            "Crear nueva muestra con la muestra actual",  # create a new sample in base of the changes made to this sample
-            "Regresar",
+            "Seleccionar una muestra",  # 1
+            "Identificar celdas para vida prosperable",  # 2
+            "Colocar organismo en una celda",  # 3
+            "Actualizar información de la muestra",  # 4
+            "Crear nueva muestra con la muestra actual",  # 5
+            "Regresar",  # 6
         ]
         # use "deepcopy" to create a complete diferent object from the one selected
         print(
@@ -165,6 +170,7 @@ class SampleMenu:
         self.execute_sample_options(selected_option)
 
     def execute_sample_options(self, selected_option: str) -> None:
+        """Given an option execute the corresponend code"""
         if selected_option == "1":
             i = 0
             for sample in self.sample_list:
@@ -172,7 +178,8 @@ class SampleMenu:
                 print("\t", str(i) + ". ", sample.sample_code)
             option = int(input("Selecciona una muestra: ")) - 1
             try:
-                self.selected_sample = self.sample_list[option].data
+                self.selected_sample = copy.deepcopy(self.sample_list[option].data)
+                self.selected_organisms = self.selected_sample.orgaanisms
             except:
                 print("OPCIÓN INVÁLIDA")
                 pause()
@@ -191,15 +198,94 @@ class SampleMenu:
             return
         elif selected_option == "2":
             # TODO
+            # generate a diferent sample for every organism where cells could live
+            # generate an image with graphviz for every sample with a before and after
+            surviving_samples = LinkedList()
+            rows, columns = self.selected_sample.get_grid_dimentions()
+            for organism in self.selected_organisms:
+                for rows in range(rows):
+                    for columns in range(columns):
+                        new_sample = self.selected_sample.simulate_sample_at(
+                            rows, columns, organism.code
+                        )
+                        if new_sample:
+                            surviving_samples.append(new_sample)
+                            self.sample_can_survive = True
+                        pass
+
+            if len(surviving_samples) == 0:
+                self.sample_operations()
+                return
+
+            for surviving_sample in surviving_samples:
+                # TODO generate file with graphviz
+                pass
+            self.sample_operations()
             return
         elif selected_option == "3":
+            if not self.sample_can_survive:
+                self.sample_operations()
+                return
+
+            selected_organism = Organism("", "")
+            i = 0
+            for organism in self.selected_organisms:
+                i += 1
+                print("\t", str(i) + ". ", organism.code)
+
+            option = int(input("Selecciona un organismo: ")) - 1
+            try:
+                selected_organism = self.selected_organisms[option].data
+            except:
+                print("OPCION INVALIDA")
+                pause()
+                self.sample_operations()
+                return
+
+            rows, columns = self.selected_sample.get_grid_dimentions()
+            print(f"Las dimensiones de la lista son ({rows}, {columns})")
+            print("Ingrese donde desea insertar la celda")
+            row = 0
+            column = 0
+            try:
+                row = int(input("Ingrese fila: ")) - 1
+                column = int(input("Ingrese columna: ")) - 1
+                if row >= rows or column >= columns:
+                    raise Exception
+            except:
+                print("Valores Equivocados!")
+                pause()
+                self.sample_operations()
+                return
+
+            sample_copy = copy.deepcopy(self.selected_sample)
+            self.selected_sample = self.selected_sample.simulate_sample_at(
+                row, column, selected_organism.code
+            )
+            # generated_sample = graphviz
+
             # TODO
+            self.sample_operations()
             return
+
         elif selected_option == "4":
-            # TODO
+            i = 0
+            for sample in self.sample_list:
+                if sample.sample_code == self.selected_sample.sample_code:
+                    self.sample_list[i].data.test_grid = self.selected_sample.test_grid
+
+            print("Cambios guardados con exito")
+            pause()
+            self.sample_operations()
             return
         elif selected_option == "5":
-            # TODO
+            os.system("clear")
+
+            code = input("Ingresa el codigo de la nueva muestra: ")
+            description = input("Ingresa unaa descripcion para la nueva muestra: ")
+            rows, columns = self.selected_sample.get_grid_dimentions()
+            self.sample_list.append(Sample(code, description, rows, columns))
+            self.sample_operations()
             return
 
         # if everything of the above fails
