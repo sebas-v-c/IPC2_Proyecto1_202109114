@@ -3,6 +3,7 @@ from typing import Optional
 from linkedList.linkedList import LinkedList, LinkedMatrix
 from linkedList.node import MatrixNode
 from samples.organism import Organism
+import copy
 
 
 class Sample:
@@ -23,6 +24,18 @@ class Sample:
 
     def get_cell(self, target_row: int, target_column: int) -> MatrixNode:
         return self.test_grid.get_node(target_row, target_column)
+
+    def copy_test_grid(self) -> LinkedMatrix:
+        rows, columns = self.get_grid_dimentions()
+        new_matrix = LinkedMatrix(rows, columns)
+        for row in range(rows):
+            for column in range(columns):
+                current_node = self.get_cell(row, column)
+                if current_node.data is not None:
+                    new_matrix.get_node(row, column).data = copy.deepcopy(
+                        current_node.data
+                    )
+        return new_matrix
 
     def simulate_sample_at(
         self, row: int, column: int, organism_code: str
