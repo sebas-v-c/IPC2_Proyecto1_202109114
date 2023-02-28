@@ -42,20 +42,27 @@ class LinkedMatrix:
 
     def get_node(self, target_row: int, target_column: int) -> MatrixNode:
         current_node: MatrixNode = self.head
-        for i in range(target_column):
-            current_node = current_node.right
         for i in range(target_row):
             current_node = current_node.down
+        for i in range(target_column):
+            current_node = current_node.right
 
         return current_node
 
-    def display_matrix(self, size=1) -> None:
+    def display_matrix(self, size=2) -> None:
+        print(" " * size, end="")
+        for column in range(self.columns):
+            print(("{:" + str(size) + "d}").format(column), end=" ")
         for row in range(self.rows):
-            for column in range(self.columns):
-                if self.get_node(row, column) is None:
-                    print(" " * size, end=" ")
-                print(self.get_node(row, column).data, end=" ")
             print("")
+            print(("{:" + str(size) + "d}").format(row), end=" ")
+            for column in range(self.columns):
+                if self.get_node(row, column).data is None:
+                    print("#" * size, end=" ")
+                    continue
+                print(self.get_node(row, column).data, end=" ")
+
+        print("")
 
 
 class LinkedList:

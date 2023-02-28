@@ -209,12 +209,16 @@ class SampleMenu:
             self.sample_operations()
             return
         elif selected_option == "2":
+            self.cell_to_live_for = self._verify_valid_sample()
+            self.selected_sample.test_grid.display_matrix(size=6)
             if len(self.cell_to_live_for) == 0:
                 print("No existe un lugar donde puedan prosperar las muestras")
                 pause()
                 self.sample_operations()
                 return
 
+            for item in self.cell_to_live_for:
+                print("ITEM EN: ", item)
             # TODO call graphviz code idk
             for cell in self.cell_to_live_for:
                 pass
@@ -269,16 +273,20 @@ class SampleMenu:
             )
             sample_copy.test_grid = self.selected_sample.copy_test_grid()
 
-            can_live = sample_copy.simulate_sample_at_cell(
-                row, column, selected_organism.code
-            )
-            if can_live:
-                sample_copy.get_cell(row, column).data = selected_organism.code
+            try:
+                can_live = sample_copy.simulate_sample_at_cell(
+                    row, column, selected_organism.code
+                )
+            except:
+                print("La casilla seleccionada ya está ocupada")
+                pause()
+                self.sample_operations()
+
             # TODO
             # generated_sample = graphviz
-            self.selected_sample.test_grid.display_matrix(size=4)
+            self.selected_sample.test_grid.display_matrix(size=6)
             print("")
-            sample_copy.test_grid.display_matrix(size=4)
+            sample_copy.test_grid.display_matrix(size=6)
 
             self.selected_sample.test_grid = sample_copy.copy_test_grid()
             self.sample_operations()
@@ -321,18 +329,18 @@ class SampleMenu:
         for organism in self.selected_organisms:
             for row in range(rows):
                 for column in range(columns):
-                    can_live = self.selected_sample.simulate_sample_at_cell(
-                        row, column, organism.code
-                    )
+                    can_live = False
+                    try:
+                        can_live = self.selected_sample.simulate_sample_at(
+                            row, column, organism.code
+                        )
+                    except ValueError:
+                        continue
                     if can_live:
                         surviving_samples.append((row, column, organism.code))
                         self.sample_can_survive = True
 
-                    # new_sample = self.selected_sample.simulate_sample_at(
-                    #     rows, columns, organism.code
-                    # )
-                    # if new_sample:
-                    #     surviving_samples.append(new_sample)
-                    #     self.sample_can_survive = True
-
+        # self.selected_sample.test_grid.display_matrix(size=6)
+        # for item in surviving_samples:
+        #     print(item)
         return surviving_samples

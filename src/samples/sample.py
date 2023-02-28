@@ -38,162 +38,190 @@ class Sample:
                     )
         return new_matrix
 
+    def simulate_sample_at(self, row: int, column: int, organism_code: str) -> bool:
+        """Simulate the sample and if is suitable for life don't change nothing in the sample"""
+        target_node: MatrixNode = self.get_cell(row, column)
+        if target_node.data is not None:
+            raise ValueError
+        target_node.data = organism_code
+        suitable_for_life = False
+        if self._life_suitable_in_direction("UP", target_node):
+            suitable_for_life = True
+        elif self._life_suitable_in_direction("DOWN", target_node):
+            suitable_for_life = True
+        elif self._life_suitable_in_direction("RIGHT", target_node):
+            suitable_for_life = True
+        elif self._life_suitable_in_direction("LEFT", target_node):
+            suitable_for_life = True
+        elif self._life_suitable_in_direction("UP_RIGHT", target_node):
+            suitable_for_life = True
+        elif self._life_suitable_in_direction("UP_LEFT", target_node):
+            suitable_for_life = True
+        elif self._life_suitable_in_direction("DOWN_RIGHT", target_node):
+            suitable_for_life = True
+        elif self._life_suitable_in_direction("DOWN_LEFT", target_node):
+            suitable_for_life = True
+
+        target_node.data = None
+        return suitable_for_life
+
     def simulate_sample_at_cell(
         self, row: int, column: int, organism_code: str
     ) -> bool:
+        """Simulate the sample and if is suitable for life change the values"""
         target_node: MatrixNode = self.get_cell(row, column)
-        life_suitable = False
+        if target_node.data is not None:
+            raise ValueError
+        target_node.data = organism_code
+        suitable_for_life = False
         if self._life_suitable_in_direction("UP", target_node):
-            life_suitable = True
+            suitable_for_life = True
             next_node = target_node.up
             while next_node is not None and next_node.data is not None:
                 next_node.data = organism_code
-                next_node = target_node.up
+                next_node = next_node.up
         elif self._life_suitable_in_direction("DOWN", target_node):
-            life_suitable = True
+            suitable_for_life = True
             next_node = target_node.down
             while next_node is not None and next_node.data is not None:
                 next_node.data = organism_code
-                next_node = target_node.down
+                next_node = next_node.down
         elif self._life_suitable_in_direction("RIGHT", target_node):
-            life_suitable = True
+            suitable_for_life = True
             next_node = target_node.right
             while next_node is not None and next_node.data is not None:
                 next_node.data = organism_code
-                next_node = target_node.right
+                next_node = next_node.right
         elif self._life_suitable_in_direction("LEFT", target_node):
-            life_suitable = True
+            suitable_for_life = True
             next_node = target_node.left
             while next_node is not None and next_node.data is not None:
                 next_node.data = organism_code
-                next_node = target_node.left
+                next_node = next_node.left
         elif self._life_suitable_in_direction("UP_RIGHT", target_node):
-            print("HOLA")
-            life_suitable = True
+            suitable_for_life = True
             next_node = target_node.up.right
             while next_node is not None and next_node.data is not None:
                 next_node.data = organism_code
-                next_node = self._get_diagonal_node("up", "right", target_node)
+                next_node = self._get_diagonal_node("up", "right", next_node)
         elif self._life_suitable_in_direction("UP_LEFT", target_node):
-            life_suitable = True
+            suitable_for_life = True
             next_node = target_node.up.left
             while next_node is not None and next_node.data is not None:
                 next_node.data = organism_code
-                next_node = self._get_diagonal_node("up", "left", target_node)
+                next_node = self._get_diagonal_node("up", "left", next_node)
         elif self._life_suitable_in_direction("DOWN_RIGHT", target_node):
-            life_suitable = True
+            suitable_for_life = True
             next_node = target_node.down.right
             while next_node is not None and next_node.data is not None:
                 next_node.data = organism_code
-                next_node = self._get_diagonal_node("down", "right", target_node)
+                next_node = self._get_diagonal_node("down", "right", next_node)
         elif self._life_suitable_in_direction("DOWN_LEFT", target_node):
-            life_suitable = True
+            suitable_for_life = True
             next_node = target_node.down.left
             while next_node is not None and next_node.data is not None:
                 next_node.data = organism_code
-                next_node = self._get_diagonal_node("down", "left", target_node)
+                next_node = self._get_diagonal_node("down", "left", next_node)
 
-        return life_suitable
+        if not suitable_for_life:
+            target_node.data = None
+        return suitable_for_life
 
-    def _life_suitable_in_direction(self, dir: str, organism_node: MatrixNode) -> bool:
+    def _life_suitable_in_direction(self, dir: str, target_node: MatrixNode) -> bool:
         life_suitable = False
         life_form_change = False
         if dir == "UP":
-            print("UP")
-            next_node = organism_node
+            next_node = target_node
             while next_node is not None and next_node.data is not None:
-                next_node = organism_node.up
-                if life_form_change and next_node.data == organism_node.data:
+                if life_form_change and next_node.data == target_node.data:
                     life_suitable = True
                     break
-                elif next_node.data == organism_node.data:
-                    next_node = organism_node.up
+                elif next_node.data == target_node.data:
+                    next_node = next_node.up
                     continue
+                next_node = next_node.up
                 life_form_change = True
 
         elif dir == "DOWN":
-            print("DOWN")
-            print(organism_node.row, organism_node.column)
-            next_node = organism_node
+            next_node = target_node
             while next_node is not None and next_node.data is not None:
-                next_node = organism_node.down
-                if life_form_change and next_node.data == organism_node.data:
+                if life_form_change and next_node.data == target_node.data:
                     life_suitable = True
                     break
-                elif next_node.data == organism_node.data:
+                elif next_node.data == target_node.data:
+                    next_node = next_node.down
                     continue
-                print(next_node.data)
+                next_node = next_node.down
                 life_form_change = True
         elif dir == "RIGHT":
-            print("RIGHT")
-            next_node = organism_node
+            next_node = target_node
             while next_node is not None and next_node.data is not None:
-                next_node = organism_node.right
-                if life_form_change and next_node.data == organism_node.data:
+                if life_form_change and next_node.data == target_node.data:
                     life_suitable = True
                     break
-                elif next_node.data == organism_node.data:
+                elif next_node.data == target_node.data:
+                    next_node = next_node.right
                     continue
+                next_node = next_node.right
                 life_form_change = True
         elif dir == "LEFT":
-            print("LEFT")
-            next_node = organism_node
+            next_node = target_node
             while next_node is not None and next_node.data is not None:
-                next_node = organism_node.left
-                if life_form_change and next_node.data == organism_node.data:
+                if life_form_change and next_node.data == target_node.data:
                     life_suitable = True
                     break
-                elif next_node.data == organism_node.data:
+                elif next_node.data == target_node.data:
+                    next_node = next_node.left
                     continue
+                next_node = next_node.left
                 life_form_change = True
         elif dir == "UP_RIGHT":
-            print("UP_RIGHT")
-            next_node = organism_node
+            next_node = target_node
             while next_node is not None and next_node.data is not None:
-                next_node = self._get_diagonal_node("up", "right", organism_node)
-                if life_form_change and next_node.data == organism_node.data:
+                if life_form_change and next_node.data == target_node.data:
                     life_suitable = True
                     break
-                elif next_node.data == organism_node.data:
+                elif next_node.data == target_node.data:
+                    next_node = self._get_diagonal_node("up", "right", next_node)
                     continue
+                next_node = self._get_diagonal_node("up", "right", next_node)
                 life_form_change = True
         elif dir == "UP_LEFT":
-            print("UP_LEFT")
             # print(organism_node.row, organism_node.column)
             # print(next_node.row, next_node.column)
-            next_node = organism_node
+            next_node = target_node
             while next_node is not None and next_node.data is not None:
-                next_node = self._get_diagonal_node("up", "left", organism_node)
-                if life_form_change and next_node.data == organism_node.data:
+                if life_form_change and next_node.data == target_node.data:
                     life_suitable = True
                     break
-                elif next_node.data == organism_node.data:
+                elif next_node.data == target_node.data:
+                    next_node = self._get_diagonal_node("up", "left", next_node)
                     continue
+                next_node = self._get_diagonal_node("up", "left", next_node)
                 life_form_change = True
         elif dir == "DOWN_RIGHT":
-            print("DOWN_RIGHT")
             # print(organism_node.row, organism_node.column)
             # print(next_node.row, next_node.column)
-            next_node = organism_node
+            next_node = target_node
             while next_node is not None and next_node.data is not None:
-                next_node = self._get_diagonal_node("down", "right", organism_node)
-                print(next_node.data)
-                if life_form_change and next_node.data == organism_node.data:
+                if life_form_change and next_node.data == target_node.data:
                     life_suitable = True
                     break
-                elif next_node.data == organism_node.data:
+                elif next_node.data == target_node.data:
+                    next_node = self._get_diagonal_node("down", "right", next_node)
                     continue
+                next_node = self._get_diagonal_node("down", "right", next_node)
                 life_form_change = True
         elif dir == "DOWN_LEFT":
-            print("DOWN_LEFT")
-            next_node = organism_node
+            next_node = target_node
             while next_node is not None and next_node.data is not None:
-                next_node = self._get_diagonal_node("down", "left", organism_node)
-                if life_form_change and next_node.data == organism_node.data:
+                if life_form_change and next_node.data == target_node.data:
                     life_suitable = True
                     break
-                elif next_node.data == organism_node.data:
+                elif next_node.data == target_node.data:
+                    next_node = self._get_diagonal_node("down", "left", next_node)
                     continue
+                next_node = self._get_diagonal_node("down", "left", next_node)
                 life_form_change = True
 
         return life_suitable
