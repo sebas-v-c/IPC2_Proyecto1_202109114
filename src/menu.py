@@ -123,6 +123,7 @@ class SampleMenu:
         self.sample_can_survive = False
         self.selected_organisms = LinkedList()
         self.modified_sample: Optional[Sample] = None
+        self.cell_to_live_for: LinkedList = LinkedList()
 
     def sample_operations(self, error: bool = False) -> None:
         if error:
@@ -186,12 +187,15 @@ class SampleMenu:
                     rows,
                     columns,
                 )
+                self.selected_sample.organisms = temp_sample.organisms
                 self.selected_sample.test_grid = temp_sample.copy_test_grid()
                 self.selected_organisms = self.selected_sample.organisms
             except:
                 print("OPCIÓN INVÁLIDA")
                 pause()
 
+            # print(len(self.selected_organisms))
+            self.cell_to_live_for = self._verify_valid_sample()
             self.sample_operations()
             return
 
@@ -205,22 +209,23 @@ class SampleMenu:
             self.sample_operations()
             return
         elif selected_option == "2":
-            # TODO
-            # generate a diferent sample for every organism where cells could live
-            # generate an image with graphviz for every sample with a before and after
-            surviving_samples = self._verify_valid_sample()
-
-            if len(surviving_samples) == 0:
+            if len(self.cell_to_live_for) == 0:
+                print("No existe un lugar donde puedan prosperar las muestras")
+                pause()
                 self.sample_operations()
                 return
 
-            for surviving_sample in surviving_samples:
-                # TODO generate file with graphviz
+            # TODO call graphviz code idk
+            for cell in self.cell_to_live_for:
                 pass
+
             self.sample_operations()
             return
         elif selected_option == "3":
+            os.system("clear")
             # if not self.sample_can_survive:
+            #     print("NINGUNA CELULA SOBREVIRA CON MUESTRA ACTUAL")
+            #     pause()
             #     self.sample_operations()
             #     return
 
@@ -255,13 +260,27 @@ class SampleMenu:
                 self.sample_operations()
                 return
 
-            sample_copy = copy.deepcopy(self.selected_sample)
-            self.selected_sample = self.selected_sample.simulate_sample_at(
+            rows, columns = self.selected_sample.get_grid_dimentions()
+            sample_copy = Sample(
+                self.selected_sample.sample_code,
+                self.selected_sample.sample_description,
+                rows,
+                columns,
+            )
+            sample_copy.test_grid = self.selected_sample.copy_test_grid()
+
+            can_live = sample_copy.simulate_sample_at_cell(
                 row, column, selected_organism.code
             )
-            # generated_sample = graphviz
-
+            if can_live:
+                sample_copy.get_cell(row, column).data = selected_organism.code
             # TODO
+            # generated_sample = graphviz
+            self.selected_sample.test_grid.display_matrix(size=4)
+            print("")
+            sample_copy.test_grid.display_matrix(size=4)
+
+            self.selected_sample.test_grid = sample_copy.copy_test_grid()
             self.sample_operations()
             return
 
@@ -300,13 +319,20 @@ class SampleMenu:
         surviving_samples = LinkedList()
         rows, columns = self.selected_sample.get_grid_dimentions()
         for organism in self.selected_organisms:
-            for rows in range(rows):
-                for columns in range(columns):
-                    new_sample = self.selected_sample.simulate_sample_at(
-                        rows, columns, organism.code
+            for row in range(rows):
+                for column in range(columns):
+                    can_live = self.selected_sample.simulate_sample_at_cell(
+                        row, column, organism.code
                     )
-                    if new_sample:
-                        surviving_samples.append(new_sample)
+                    if can_live:
+                        surviving_samples.append((row, column, organism.code))
                         self.sample_can_survive = True
+
+                    # new_sample = self.selected_sample.simulate_sample_at(
+                    #     rows, columns, organism.code
+                    # )
+                    # if new_sample:
+                    #     surviving_samples.append(new_sample)
+                    #     self.sample_can_survive = True
 
         return surviving_samples

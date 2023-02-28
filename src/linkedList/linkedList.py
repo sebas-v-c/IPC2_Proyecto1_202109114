@@ -10,9 +10,9 @@ class LinkedMatrix:
 
         self.rows = rows
         self.columns = columns
-        self.__create_matrix__(rows, columns)
+        self._create_matrix(rows, columns)
 
-    def __create_matrix__(self, rows: int, columns: int) -> None:
+    def _create_matrix(self, rows: int, columns: int) -> None:
         left_node: MatrixNode = self.head
         first_column_node: MatrixNode = self.head
         for row in range(rows):
@@ -49,9 +49,11 @@ class LinkedMatrix:
 
         return current_node
 
-    def display_matrix(self) -> None:
+    def display_matrix(self, size=1) -> None:
         for row in range(self.rows):
             for column in range(self.columns):
+                if self.get_node(row, column) is None:
+                    print(" " * size, end=" ")
                 print(self.get_node(row, column).data, end=" ")
             print("")
 
