@@ -86,22 +86,7 @@ def create_marked_graphviz_table(
     # A list with a organism name and color
     organisms_color: LinkedList = LinkedList()
     for organism in sample.organisms:
-        # a tupple with an organism code and a random color
-        echo_color = subprocess.Popen(
-            ["echo", "-n", f"{organism.code}"], stdout=subprocess.PIPE
-        )
-        get_hash = subprocess.Popen(
-            ["md5sum"], stdin=echo_color.stdout, stdout=subprocess.PIPE
-        )
-        cuted_color = subprocess.Popen(
-            ["cut", "-c1-6"], stdin=get_hash.stdout, stdout=subprocess.PIPE
-        )
-
-        color, err = cuted_color.communicate()
-        color = color.decode("utf-8")
-
-        hex_color = f"#{color}"
-        organisms_color.append((organism.code, hex_color))
+        organisms_color.append((organism.code, f"#{organism.color}"))
 
     html_sample_table = "\n".join(
         [

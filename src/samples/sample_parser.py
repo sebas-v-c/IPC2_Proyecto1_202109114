@@ -5,6 +5,7 @@ from linkedList.node import MatrixNode
 
 from samples.organism import Organism
 from samples.sample import Sample
+import hashlib
 
 
 def parse_xml_sample_file(file_name: str) -> LinkedList:
@@ -14,7 +15,13 @@ def parse_xml_sample_file(file_name: str) -> LinkedList:
     organisms_list: LinkedList = LinkedList()
 
     for organism in root[0]:
-        organisms_list.append(Organism(str(organism[0].text), str(organism[1].text)))
+        new_organism = Organism(str(organism[0].text), str(organism[1].text))
+        # using hash lib to generate a unique color for every organism
+        hash_color = hashlib.sha256()
+        hash_color.update(str(organism[0].text).encode())
+        color = hash_color.hexdigest()[:6]
+        new_organism.color = color
+        organisms_list.append(new_organism)
 
     for sample in root[1]:
         new_sample = Sample(
