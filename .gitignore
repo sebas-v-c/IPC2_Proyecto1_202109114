@@ -130,3 +130,6 @@ dmypy.json
 
 # Test entries
 *.xml
+
+*.out
+*.pdf

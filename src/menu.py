@@ -1,6 +1,7 @@
 import os
 from tkinter.filedialog import askopenfilename, asksaveasfile
 from typing import Optional
+import Graphviz
 
 from linkedList.linkedList import LinkedList
 from samples.organism import Organism
@@ -71,6 +72,13 @@ class MainMenu:
             if file_name:
                 samples: LinkedList = smplp.parse_xml_sample_file(file_name)
                 for sample_object in samples:
+                    if len(sample_object.organisms) > 1000:
+                        print(
+                            "Existen mas de 1000 organismos en la muestra!\nIntroduzca una muestra con menos organismos"
+                        )
+                        pause()
+                        self.main_menu()
+                        return
                     self.sample_list.append(sample_object)
                 print("Archivo cargado con exito!")
                 pause()
@@ -210,28 +218,55 @@ class SampleMenu:
             return
         elif selected_option == "2":
             self.cell_to_live_for = self._verify_valid_sample()
-            self.selected_sample.test_grid.display_matrix(size=6)
             if len(self.cell_to_live_for) == 0:
                 print("No existe un lugar donde puedan prosperar las muestras")
                 pause()
                 self.sample_operations()
                 return
 
-            for item in self.cell_to_live_for:
-                print("ITEM EN: ", item)
-            # TODO call graphviz code idk
-            for cell in self.cell_to_live_for:
-                pass
+            table_with_cells_livind = Graphviz.create_marked_graphviz_table(
+                self.selected_sample, self.cell_to_live_for
+            )
+
+            file = asksaveasfile(
+                mode="w", filetypes=[("OUT File", "*.out")], defaultextension=".out"
+            )
+            file_name = ""
+            if file:
+                file_name = file.name
+                final_graphviz = Graphviz.FULL_FORMAT_STR(table_with_cells_livind)
+                file.write(final_graphviz)
+                file.close()
+                try:
+                    os.system(
+                        "dot -Tpdf " + file_name + " > " + file_name[:-4] + ".pdf"
+                    )
+                except:
+                    print("Ha ocurrido un error al generar el archivo pdf")
+                    pause()
+                    self.sample_operations()
+                    return
+
+                try:
+                    os.system("zathura " + file_name[:-4] + ".pdf")
+                except:
+                    print("Ha ocurrido un error al abrir el archivo pdf")
+                    pause()
+                    self.sample_operations()
+                    return
+
+                print("ARCHIVO GUARDADO CON ÉXITO")
+                pause()
 
             self.sample_operations()
             return
         elif selected_option == "3":
             os.system("clear")
-            # if not self.sample_can_survive:
-            #     print("NINGUNA CELULA SOBREVIRA CON MUESTRA ACTUAL")
-            #     pause()
-            #     self.sample_operations()
-            #     return
+            if not self.sample_can_survive:
+                print("NINGUNA CELULA SOBREVIRA CON MUESTRA ACTUAL")
+                pause()
+                self.sample_operations()
+                return
 
             selected_organism: Optional[Organism] = None
             i = 0
@@ -272,6 +307,7 @@ class SampleMenu:
                 columns,
             )
             sample_copy.test_grid = self.selected_sample.copy_test_grid()
+            sample_copy.organisms = self.selected_sample.organisms
 
             try:
                 can_live = sample_copy.simulate_sample_at_cell(
@@ -282,11 +318,45 @@ class SampleMenu:
                 pause()
                 self.sample_operations()
 
-            # TODO
-            # generated_sample = graphviz
-            self.selected_sample.test_grid.display_matrix(size=6)
-            print("")
-            sample_copy.test_grid.display_matrix(size=6)
+            pre_organisms_table = Graphviz.create_graphviz_table(
+                self.selected_sample, tables_name="PreOrganisms"
+            )
+            new_organisms_table = Graphviz.create_graphviz_table(
+                sample_copy, tables_name="NewOrganisms"
+            )
+
+            file = asksaveasfile(
+                mode="w", filetypes=[("OUT File", "*.out")], defaultextension=".out"
+            )
+            file_name = ""
+            if file:
+                file_name = file.name
+                final_graphviz = Graphviz.FULL_FORMAT_STR(
+                    "\n".join([new_organisms_table, pre_organisms_table])
+                )
+                file.write(final_graphviz)
+                file.close()
+                try:
+                    os.system(
+                        "dot -Tpdf " + file_name + " > " + file_name[:-4] + ".pdf"
+                    )
+                except:
+                    print("Ha ocurrido un error al generar el archivo pdf")
+                    pause()
+                    self.sample_operations()
+                    return
+
+                try:
+                    os.system("zathura " + file_name[:-4] + ".pdf")
+                except:
+                    print("Ha ocurrido un error al abrir el archivo pdf")
+                    print("Ha ocurrido un error al generar el archivo pdf")
+                    pause()
+                    self.sample_operations()
+                    return
+
+                print("ARCHIVO GUARDADO CON ÉXITO")
+                pause()
 
             self.selected_sample.test_grid = sample_copy.copy_test_grid()
             self.sample_operations()
